@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import base64
-import bitstring
 import c3, c5
 
 def beautify(candidates: list):
@@ -17,13 +16,13 @@ def hamming_distance(str1: str, str2: str) -> int:
 
     returns (int) distance
     '''
-    # declare bitarrays
-    b1 = bitstring.Bits(bytes.fromhex(str1)).bin
-    b2 = bitstring.Bits(bytes.fromhex(str2)).bin
-    # calculate difference in bit length as initial bit diff count
-    count = abs(len(b1) - len(b2))
+    # declare bytes
+    b1 = bytes.fromhex(str1)
+    b2 = bytes.fromhex(str2)
+    count = 0
     for i, j in zip(b1, b2):
-        count = count + 1 if i != j else count + 0
+        xor = bin(i^j)
+        count += xor.count("1")
     return count
 
 def generate_keysize_candidates(filepath: str):
