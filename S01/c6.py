@@ -2,13 +2,16 @@
 
 import base64
 import c3, c5
+from itertools import combinations
 
 def beautify(candidates: list):
     '''
     Pretty prints the candidates returned
     '''
+    s = ''
     for c in candidates:
-        print('Keysize: {}\tHamming Distance: {}'.format( c['keysize'], c['normalized_distance']))
+        s += 'Keysize: {}\tHamming Distance: {}\n'.format( c['keysize'], c['normalized_distance'])
+    return s
 
 def hamming_distance(str1: str, str2: str) -> int:
     '''
@@ -25,7 +28,7 @@ def hamming_distance(str1: str, str2: str) -> int:
         count += xor.count("1")
     return count
 
-def generate_keysize_candidates(filepath: str):
+def generate_keysize_candidates(data: str) -> list:
     '''
     Calculates the hamming distance for a variety of keysizes and returns
     the top 4 candidates.
@@ -33,21 +36,23 @@ def generate_keysize_candidates(filepath: str):
     returns a list of candidates
     '''
     distance_candidates = []
-    with open(filepath, 'r') as file:
-        b64_ciphertext = file.read()
-        b64_ciphertext_bytes = bytes(b64_ciphertext, 'utf-8')
-        ciphertext_bytes = base64.b64decode(b64_ciphertext_bytes)
-        for KEYSIZE in range(2, 41):
-            first_bytes = ciphertext_bytes[:KEYSIZE]
-            second_bytes = ciphertext_bytes[KEYSIZE:KEYSIZE*2]
-            distance = hamming_distance(first_bytes.hex(), second_bytes.hex())
-            normalized_distance = distance / KEYSIZE
-            distance_candidate = {
-                'keysize': KEYSIZE,
-                'normalized_distance': normalized_distance,
-            }
-            distance_candidates.append(distance_candidate)
-    return sorted(distance_candidates, key=lambda c: c['normalized_distance'])[:5]
+    ciphertext_bytes = base64.b64decode(data)
+    for keysize in range(2, 41):
+
+        blocks = [ciphertext_bytes[i:i+keysize] for i in range(0, len(ciphertext_bytes), keysize)][:4]
+        distance = 0
+        block_combinations = tuple(combinations(blocks, 2))
+        for (a,b) in block_combinations:
+            distance += hamming_distance(a.hex(), b.hex())
+        distance /= len(block_combinations)
+        normalized_distance = distance / keysize
+        distance_candidate = {
+            'keysize': keysize,
+            'normalized_distance': normalized_distance,
+        }
+        distance_candidates.append(distance_candidate)
+
+    return sorted(distance_candidates, key=lambda c: c['normalized_distance'])
 
 def generate_blocks(filepath: str, keysize: int) -> list:
     '''
@@ -103,16 +108,17 @@ def solve_repeating_xor(filepath: str, keysize: int) -> str:
     return key
 
 if __name__ == "__main__":
-    txt = None
-    with open('c6_input.txt', 'r') as file:
-        txt = file.read()
-    print('Keysize Candidates:')
-    candidates = generate_keysize_candidates('c6_input.txt')
-    beautify(candidates)
+    from pathlib import Path
+    path = str(Path(__file__).parent.absolute())
+    file = open(path + '/' + 'c6_input.txt', 'r')
+    txt = file.read()
+    file.close()
+    candidates = generate_keysize_candidates(txt)[:1]
     keys = []
     for candidate in candidates:
-        tmp_key = solve_repeating_xor('c6_input.txt', candidate['keysize'])
+        tmp_key = solve_repeating_xor(path + '/c6_input.txt', candidate['keysize'])
         keys.append(tmp_key)
     for key in keys:
-        print('Using Key:', key)
-        print('Resulting XOR\'ed text:', c5.repeating_xor(txt, key).decode())
+        print('\033[35mUsing Key:\033[39m', key)
+        print('\033[35mKeysize:\033[39m', len(key))
+        print('\033[35mResulting XOR\'d text:\033[39m', c5.repeating_xor(base64.b64decode(txt).decode(), key).decode())
