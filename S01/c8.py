@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from Crypto.Cipher import AES
-from c7 import aes_ecb
 
 def detect_aes_ecb(filepath: str) -> list:
     '''
