@@ -44,6 +44,11 @@ def encryption_oracle(cleartext: bytes) -> bytes:
         
 
 if __name__ == '__main__':
-    ciphertext = encryption_oracle(b'AAAAAAAAAAAAAAAAAAAA')
+    ciphertext = encryption_oracle(bytes([0]*128))
     print('CIPHERTEXT HEX:', ciphertext.hex())
     print('LENGTH:', len(ciphertext.hex()) // 2)
+    count = duplicate_blocks(ciphertext)
+    if count > 0:
+        print('MODE: ECB')
+    else:
+        print('MODE: CBC')
