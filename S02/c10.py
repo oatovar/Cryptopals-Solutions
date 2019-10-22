@@ -4,6 +4,24 @@ from base64 import b64decode
 from Crypto.Cipher import AES
 from c9 import pkcs7_padding
 
+def decrypt_aes_ecb(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
+    '''
+    Decrypts a given cleartext using the given key, iv, and block size
+
+    returns ciphertext bytes
+    '''
+    cipher = AES.new(key, AES.MODE_ECB, iv)
+    return cipher.decrypt(ciphertext)
+
+def encrypt_aes_ecb(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
+    '''
+    Encrypts a given cleartext using the given key, iv, and block size
+
+    returns ciphertext bytes
+    '''
+    cipher = AES.new(key, AES.MODE_ECB, iv)
+    return cipher.encrypt(ciphertext)
+
 def decrypt_aes_cbc(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     '''
     Encrypts a given cleartext using the given key, iv, and block size
