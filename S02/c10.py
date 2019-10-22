@@ -20,7 +20,7 @@ def encrypt_aes_ecb(cleartext: bytes, key: bytes) -> bytes:
     returns ciphertext bytes
     '''
     cipher = AES.new(key, AES.MODE_ECB)
-    return cipher.encrypt(ciphertext)
+    return cipher.encrypt(cleartext)
 
 def decrypt_aes_cbc(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     '''
