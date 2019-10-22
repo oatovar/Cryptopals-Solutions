@@ -13,7 +13,7 @@ def decrypt_aes_ecb(ciphertext: bytes, key: bytes) -> bytes:
     cipher = AES.new(key, AES.MODE_ECB)
     return cipher.decrypt(ciphertext)
 
-def encrypt_aes_ecb(ciphertext: bytes, key: bytes) -> bytes:
+def encrypt_aes_ecb(cleartext: bytes, key: bytes) -> bytes:
     '''
     Encrypts a given cleartext using the given key, iv, and block size
 
