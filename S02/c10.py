@@ -24,7 +24,7 @@ def encrypt_aes_ecb(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
 
 def decrypt_aes_cbc(ciphertext: bytes, key: bytes, iv: bytes) -> bytes:
     '''
-    Encrypts a given cleartext using the given key, iv, and block size
+    Decrypts a given cleartext using the given key, iv, and block size
 
     returns ciphertext bytes
     '''
