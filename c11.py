@@ -4,11 +4,11 @@ from random import randrange, randint
 from Crypto.Cipher import AES
 from c10 import encrypt_aes_cbc, encrypt_aes_ecb
 
-def duplicate_blocks(ciphertext: bytes) -> int:
+def duplicate_blocks(ciphertext: bytes, blocksize: int) -> int:
     '''
     Returns the number of duplicate blocks within the ciphertext bytes
     '''
-    blocks = [ciphertext[i:i + AES.block_size] for i in range(0, len(ciphertext), AES.block_size)]
+    blocks = [ciphertext[i:i + blocksize] for i in range(0, len(ciphertext), blocksize)]
     block_count = len(blocks)
     return (block_count - len(set(blocks)))
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     ciphertext = encryption_oracle(bytes([0]*128))
     print('CIPHERTEXT HEX:', ciphertext.hex())
     print('LENGTH:', len(ciphertext.hex()) // 2)
-    count = duplicate_blocks(ciphertext)
+    count = duplicate_blocks(ciphertext, AES.block_size)
     if count > 0:
         print('MODE: ECB')
     else:
